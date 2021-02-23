@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="550.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.mikan.ipscan.ui.HomeController">
+    <top>
+        <MenuBar useSystemMenuBar="true">
+            <Menu text="File">
+                <MenuItem onAction="#handleMenuExit" text="Exit" />
+            </Menu>
+            <Menu text="Help">
+                <MenuItem onAction="#handleMenuVersion" text="About..." />
+            </Menu>
+        </MenuBar>
+    </top>
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE">
+            <Tab text="IP Scan">
+                <BorderPane>
+                    <center>
+                        <TableView fx:id="scanResultTable">
+                            <columns>
+                                <TableColumn fx:id="ipColumn" prefWidth="97.0" text="IP Address" />
+                                <TableColumn fx:id="macColumn" prefWidth="119.0" text="MAC Address" />
+                                <TableColumn fx:id="vendorColumn" prefWidth="233.0" text="Vendor" />
+                            </columns>
+                        </TableView>
+                    </center>
+               <top>
+                   <HBox alignment="CENTER_LEFT" spacing="5.0" BorderPane.alignment="CENTER">
+                       <padding>
+                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                       </padding>
+                       <Label text="Network adapter:" />
+                       <ChoiceBox fx:id="networkAdapterChoiceBox" prefWidth="150.0" />
+                     <Button mnemonicParsing="false" fx:id="startScanButton" onAction="#handleStartScan" text="Start" textFill="LIME" />
+                     <Button mnemonicParsing="false" fx:id="stopScanButton" onAction="#handleStopScan" text="Stop" textFill="RED" />
+                   </HBox>
+               </top>
+               <bottom>
+                         <HBox fx:id="progressBox" spacing="5.0" BorderPane.alignment="CENTER">
+                             <padding>
+                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                             </padding>
+                             <ProgressIndicator fx:id="progressIndicator" prefHeight="20.0" prefWidth="20.0" />
+                             <Label fx:id="resultLabel" text="Ready" />
+                         </HBox>
+               </bottom>
+                </BorderPane>
+            </Tab>
+            <Tab text="Utilities">
+                <BorderPane>
+                    <center>
+                    </center>
+                    <center>
+                        <VBox alignment="TOP_CENTER">
+                            <TitledPane text="Network Information">
+                                <GridPane hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" vgap="10.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" />
+                                        <ColumnConstraints hgrow="SOMETIMES" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints vgrow="SOMETIMES" />
+                                        <RowConstraints vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <Label text="External IP address:" />
+                                    <Label fx:id="globalIpLabel" text="(Unknown)" GridPane.columnIndex="1" />
+                                    <Label text="Network adapters:" GridPane.rowIndex="1" />
+                                    <Label fx:id="networkAdaptersLabel" text="(Unknown)" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Button fx:id="utilityRefreshButton" mnemonicParsing="false" onAction="#handleUtilityRefresh" text="Refresh" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                </GridPane>
+                            </TitledPane>
+                            <TitledPane text="Utilities">
+                                <GridPane hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" vgap="10.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints vgrow="SOMETIMES" />
+                                        <RowConstraints vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <Button mnemonicParsing="false" onAction="#handlePing" text="ping" />
+                                    <Button mnemonicParsing="false" onAction="#handleArp" text="arp" GridPane.rowIndex="1" />
+                                    <Button mnemonicParsing="false" onAction="#handleTraceRoute" text="traceroute" GridPane.rowIndex="2" />
+                                </GridPane>
+                            </TitledPane>
+                        </VBox>
+                    </center>
+                </BorderPane>
+            </Tab>
+        </TabPane>
+    </center>
+</BorderPane>

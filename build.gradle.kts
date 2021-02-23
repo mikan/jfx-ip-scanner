@@ -1,0 +1,72 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+    application
+    kotlin("jvm") version "1.4.30"
+    id("org.openjfx.javafxplugin") version "0.0.9"
+    id("org.jmailen.kotlinter") version "3.3.0"
+    id("org.beryx.jlink") version "2.23.3"
+}
+
+group = "com.github.mikan.ipscan"
+version = "1.0.0"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation(kotlin("stdlib-jdk8"))
+    implementation("com.neovisionaries:nv-oui:1.1")
+}
+
+tasks {
+    withType<KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "14"
+        }
+        dependsOn("genVersionFile")
+    }
+
+    application {
+        mainModule.set("com.github.mikan.ipscan")
+        mainClass.set("com.github.mikan.ipscan.MainKt")
+    }
+
+    javafx {
+        version = "15.0.1"
+        modules = listOf("javafx.controls", "javafx.fxml")
+    }
+
+    jlink {
+        launcher {
+            noConsole = true
+        }
+        forceMerge("kotlin")
+        jpackage {
+            when {
+                Os.isFamily(Os.FAMILY_WINDOWS) -> {
+                    imageOptions = listOf("--icon", "icon.ico")
+                    installerOptions = listOf("--vendor", "mikan", "--win-shortcut")
+                }
+                Os.isFamily(Os.FAMILY_MAC) -> {
+                    imageOptions = listOf("--icon", "icon.icns")
+                    installerOptions = listOf("--vendor", "mikan")
+                }
+                else -> {
+                    imageOptions = listOf("--icon", "icon.png")
+                    installerOptions = listOf("--vendor", "mikan")
+                }
+            }
+        }
+    }
+
+    register("genVersionFile") {
+        doLast {
+            val f = File(projectDir.absolutePath + "/src/main/resources/version.properties")
+            f.createNewFile()
+            f.writeText("app.version=$version\n")
+        }
+    }
+}
