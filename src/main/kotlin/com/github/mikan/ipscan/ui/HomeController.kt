@@ -211,8 +211,7 @@ class HomeController : Initializable {
     }
 
     private fun found(ip: String) {
-        val command = if (App.isWindows()) "arp -a $ip" else "arp $ip"
-        val p = Runtime.getRuntime().exec(command)
+        val p = Runtime.getRuntime().exec(NetworkCommand.encodeArpCommand(ip))
         val result = readAll(p.inputStream)
         p.waitFor()
         val mac = ValidationService.extractMacAddress(result.toLowerCase().replace("-", ":"))

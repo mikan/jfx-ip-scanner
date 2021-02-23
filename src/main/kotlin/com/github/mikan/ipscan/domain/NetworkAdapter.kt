@@ -16,7 +16,7 @@ data class NetworkAdapter(val name: String, val displayName: String, val ipV4: L
             }
             var addr = 0
             for (i in 1..4) {
-                addr = addr or (tokens.get(i - 1) and 0xff shl 8 * (4 - i))
+                addr = addr or (tokens[i - 1] and 0xff shl 8 * (4 - i))
             }
             val netmask = (0x0FFFFFFFFL shl (32 - length.toInt())).toInt()
             val network = addr and netmask
@@ -25,10 +25,10 @@ data class NetworkAdapter(val name: String, val displayName: String, val ipV4: L
             val n = (network and uintMask).toLong()
             val count = b - n + -1
             val ct = (if (count < 0) 0 else count).toInt()
-            val addresses = arrayOfNulls<String>(ct)
             if (ct == 0) {
                 return listOf()
             }
+            val addresses = arrayOfNulls<String>(ct)
             var add = if (b - n > 1) network + 1 else 0
             var i = 0
             while (add <= if (b - n > 1) broadcast - 1 else 0) {

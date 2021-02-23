@@ -22,10 +22,6 @@ class App : Application() {
             alert.showAndWait()
         }
 
-        fun isWindows(): Boolean {
-            return System.getProperty("os.name").toLowerCase().startsWith("win")
-        }
-
         fun startCommandStage(command: NetworkCommand, vararg params: String) {
             val loader = FXMLLoader(this::class.java.getResource("/fxml/command.fxml"))
             val stage = Stage()
