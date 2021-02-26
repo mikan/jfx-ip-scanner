@@ -113,12 +113,12 @@ class HomeController : Initializable {
 
         adapters.addAll(NetworkAdapterService.listNetworkAdapters())
         if (!adapters.isEmpty()) {
-            networkAdapterChoiceBox.value = adapters.get(0)
+            networkAdapterChoiceBox.value = adapters[0]
         }
         startScanButton.isDisable = adapters.isEmpty()
         stopScanButton.isDisable = true
 
-        updateUtility("(Click \"Refresh\")", adapters)
+        updateUtility(App.messages.getString("home.label.click_refresh"), adapters)
 
         val csv = this.javaClass.classLoader.getResource("oui.csv")
             ?: throw InternalError("oui.csv unavailable")
@@ -135,14 +135,14 @@ class HomeController : Initializable {
     @Suppress("UNUSED_PARAMETER")
     fun handleMenuVersion(event: ActionEvent) {
         val alert = Alert(Alert.AlertType.INFORMATION)
-        alert.title = "jfx-ip-scanner"
-        alert.headerText = "About this application"
+        alert.title = App.messages.getString("app.name")
+        alert.headerText = App.messages.getString("home.label.about")
         alert.contentText =
             """
-            JFX IP Scanner v${Version.get()}
+            ${alert.title} v${Version.get()}
             (JRE v${System.getProperty("java.version")} / Kotlin v${KotlinVersion.CURRENT})
             
-            Copyright© 2021 mikan
+            ${App.messages.getString("app.copyright")}
             """.trimIndent()
         alert.showAndWait()
     }
@@ -157,7 +157,7 @@ class HomeController : Initializable {
         startScanButton.isDisable = true
         stopScanButton.isDisable = false
         resultLabel.textFill = Color.BLACK
-        resultLabel.text = "Scanning..."
+        resultLabel.text = App.messages.getString("home.progress.scanning")
         progressBox.children.add(0, progressIndicator)
         foundList.clear()
         val adapter = networkAdapterChoiceBox.value
@@ -169,7 +169,8 @@ class HomeController : Initializable {
                 return@forEach
             }
             if (it == adapter.ipV4[0].address) {
-                foundList.add(ScanResult(it, "(This PC)", "(This PC)"))
+                val label = App.messages.getString("home.label.this_pc")
+                foundList.add(ScanResult(it, label, label))
                 Collections.sort(foundList, scanResultComparator)
                 return@forEach
             }
@@ -206,8 +207,9 @@ class HomeController : Initializable {
     @FXML
     @Suppress("UNUSED_PARAMETER")
     fun handleStopScan(event: ActionEvent) {
-        resultLabel.text = "Stopping..."
+        resultLabel.text = App.messages.getString("home.progress.stopping")
         threadPool.shutdownNow()
+        stopScanButton.isDisable = true
     }
 
     private fun found(ip: String) {
@@ -223,19 +225,19 @@ class HomeController : Initializable {
     }
 
     private fun scanSuccess() {
-        resultLabel.text = "✔Scan complete"
+        resultLabel.text = "✔" + App.messages.getString("home.progress.complete")
         resultLabel.textFill = Color.GREEN
         progressBox.children.remove(progressIndicator)
     }
 
     private fun scanError(message: String) {
-        resultLabel.text = "ERROR: $message"
+        resultLabel.text = App.messages.getString("home.progress.error_prefix") + " " + message
         resultLabel.textFill = Color.RED
         progressBox.children.remove(progressIndicator)
     }
 
     private fun scanTerminated() {
-        resultLabel.text = "Scan terminated"
+        resultLabel.text = App.messages.getString("home.progress.terminated")
         resultLabel.textFill = Color.BLACK
         progressBox.children.remove(progressIndicator)
     }
@@ -263,7 +265,7 @@ class HomeController : Initializable {
                 }
             } catch (e: Throwable) {
                 Platform.runLater {
-                    App.errorDialog("Failed to refresh: ${e.localizedMessage}")
+                    App.errorDialog(App.messages.getString("home.dialog.error.refresh") + e.localizedMessage)
                 }
             } finally {
                 Platform.runLater { utilityRefreshButton.isDisable = false }
@@ -275,15 +277,11 @@ class HomeController : Initializable {
     @Suppress("UNUSED_PARAMETER")
     fun handlePing(event: ActionEvent) {
         val dialog = TextInputDialog("")
-        dialog.title = "ping"
-        dialog.headerText = "ping"
-        dialog.contentText = "Host name or IP address (ex: 10.128.0.10):"
+        dialog.title = App.messages.getString("home.button.ping")
+        dialog.headerText = dialog.title
+        dialog.contentText = App.messages.getString("command.label.ping.target")
         val ipAddress = dialog.showAndWait()
         if (!ipAddress.isPresent) {
-            return
-        }
-        if (!ValidationService.validateIpV4Address(ipAddress.get())) {
-            App.errorDialog("Invalid IP address: " + ipAddress.get())
             return
         }
         App.startCommandStage(NetworkCommand.PING, ipAddress.get())
@@ -294,14 +292,14 @@ class HomeController : Initializable {
     fun handleArp(event: ActionEvent) {
         val adapters = NetworkAdapterService.listNetworkAdapters()
         when (adapters.size) {
-            0 -> App.errorDialog("Unable to find online network adapter")
+            0 -> App.errorDialog(App.messages.getString("command.dialog.error.adapter"))
             1 -> App.startCommandStage(NetworkCommand.ARP, adapters[0].ipV4[0].address, adapters[0].name)
             else -> {
                 val choice = adapters.map { it.ipV4[0].address }
                 val dialog = ChoiceDialog(choice[0], choice)
-                dialog.title = "arp"
+                dialog.title = App.messages.getString("home.button.arp")
                 dialog.headerText = dialog.title
-                dialog.contentText = "Network adapter:"
+                dialog.contentText = App.messages.getString("home.choice.adapter")
                 val ipAddress = dialog.showAndWait()
                 if (!ipAddress.isPresent) {
                     return
@@ -316,9 +314,9 @@ class HomeController : Initializable {
     @Suppress("UNUSED_PARAMETER")
     fun handleTraceRoute(event: ActionEvent) {
         val dialog = TextInputDialog("")
-        dialog.title = "traceroute"
+        dialog.title = App.messages.getString("home.button.traceroute")
         dialog.headerText = dialog.title
-        dialog.contentText = "Host name or IP address (ex: www.google.com):"
+        dialog.contentText = App.messages.getString("command.label.traceroute.target")
         val target = dialog.showAndWait()
         if (!target.isPresent || target.isEmpty) {
             return
@@ -328,7 +326,7 @@ class HomeController : Initializable {
 
     private fun updateUtility(globalIp: String, adapters: List<NetworkAdapter>) {
         if (globalIp.isEmpty()) {
-            globalIpLabel.text = "(Unknown)"
+            globalIpLabel.text = App.messages.getString("home.label.unknown")
         } else {
             val hostname = NetworkAdapterService.hostFromIp(globalIp)
             if (hostname.isEmpty()) {
@@ -338,13 +336,14 @@ class HomeController : Initializable {
             }
         }
         if (adapters.isEmpty()) {
-            networkAdaptersLabel.text = "(Not detected)"
+            networkAdaptersLabel.text = App.messages.getString("command.label.not_detected")
         } else {
             var adaptersText = ""
             adapters.forEach {
                 adaptersText += "${it.name} (${it.displayName})\n"
                 it.ipV4.forEach { ip ->
-                    adaptersText += "• Address: ${ip.address} /${ip.length}\n"
+                    val prefix = App.messages.getString("command.label.address_prefix")
+                    adaptersText += "• $prefix ${ip.address} /${ip.length}\n"
                 }
             }
             networkAdaptersLabel.text = adaptersText

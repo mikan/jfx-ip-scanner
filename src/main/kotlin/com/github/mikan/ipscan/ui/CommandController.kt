@@ -46,25 +46,25 @@ class CommandController : Initializable {
     fun startCommand(command: NetworkCommand, vararg params: String) {
         when (command) {
             NetworkCommand.PING -> {
-                titleLabel.text = "ping"
+                titleLabel.text = App.messages.getString("home.button.ping")
                 if (params.size != 1) {
-                    error("Invalid parameter: $params")
+                    error(App.messages.getString("command.dialog.error.param") + " $params")
                     return
                 }
                 Thread { startPing(params[0]) }.start()
             }
             NetworkCommand.ARP -> {
-                titleLabel.text = "arp"
+                titleLabel.text = App.messages.getString("home.button.arp")
                 if (params.size != 2) {
-                    error("Invalid parameter: $params")
+                    error(App.messages.getString("command.dialog.error.param") + " $params")
                     return
                 }
                 Thread { startArp(params[0], params[1]) }.start()
             }
             NetworkCommand.TRACEROUTE -> {
-                titleLabel.text = "traceroute"
+                titleLabel.text = App.messages.getString("home.button.traceroute")
                 if (params.size != 1) {
-                    error("Invalid parameter: $params")
+                    error(App.messages.getString("command.dialog.error.param") + " $params")
                     return
                 }
                 Thread { startTraceRoute(params[0]) }.start()
@@ -84,9 +84,9 @@ class CommandController : Initializable {
             object : CompleteHandler {
                 override fun onComplete(result: String, status: Int) {
                     if (NetworkCommand.validatePingResult(status, resultTextArea.text)) {
-                        success("Success")
+                        success(App.messages.getString("command.progress.success"))
                     } else {
-                        error("Failed")
+                        error(App.messages.getString("command.progress.failed"))
                     }
                 }
             }
@@ -99,9 +99,9 @@ class CommandController : Initializable {
             object : CompleteHandler {
                 override fun onComplete(result: String, status: Int) {
                     if (status == 0) {
-                        success("Complete")
+                        success(App.messages.getString("command.progress.complete"))
                     } else {
-                        error("Exit status $status")
+                        error(App.messages.getString("command.progress.exit_status_prefix") + " " + status)
                     }
                 }
             }
@@ -114,9 +114,9 @@ class CommandController : Initializable {
             object : CompleteHandler {
                 override fun onComplete(result: String, status: Int) {
                     if (status == 0) {
-                        success("Complete")
+                        success(App.messages.getString("command.progress.complete"))
                     } else {
-                        error("Exit status $status")
+                        error(App.messages.getString("command.progress.exit_status_prefix") + " " + status)
                     }
                 }
             }
@@ -138,7 +138,7 @@ class CommandController : Initializable {
                     p.waitFor()
                 } catch (e: InterruptedException) {
                     Thread.currentThread().interrupt()
-                    Platform.runLater { error("Terminated") }
+                    Platform.runLater { error(App.messages.getString("command.progress.terminated")) }
                     return@Thread
                 }
                 Platform.runLater {
@@ -146,7 +146,7 @@ class CommandController : Initializable {
                 }
             }.start()
         } catch (e: IOException) {
-            Platform.runLater { error("Failed to run: " + e.localizedMessage) }
+            Platform.runLater { error(App.messages.getString("command.progress.failed_run_prefix") + " " + e.localizedMessage) }
             return
         }
     }
@@ -159,7 +159,7 @@ class CommandController : Initializable {
     }
 
     private fun error(message: String) {
-        resultLabel.text = "ERROR: $message"
+        resultLabel.text = App.messages.getString("home.progress.error_prefix") + " $message"
         resultLabel.textFill = Color.RED
         progressIndicator.isVisible = false
         progressBox.children.remove(progressIndicator)
