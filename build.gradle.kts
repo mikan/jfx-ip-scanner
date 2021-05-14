@@ -4,9 +4,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     application
     kotlin("jvm") version "1.4.30"
-    id("org.openjfx.javafxplugin") version "0.0.9"
-    id("org.jmailen.kotlinter") version "3.3.0"
-    id("org.beryx.jlink") version "2.23.3"
+    id("org.openjfx.javafxplugin") version "0.0.10"
+    id("org.jmailen.kotlinter") version "3.4.4"
+    id("org.beryx.jlink") version "2.23.8"
 }
 
 group = "com.github.mikan.ipscan"
