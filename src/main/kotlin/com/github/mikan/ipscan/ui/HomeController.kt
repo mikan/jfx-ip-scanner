@@ -216,7 +216,7 @@ class HomeController : Initializable {
         val p = Runtime.getRuntime().exec(NetworkCommand.encodeArpCommand(ip))
         val result = readAll(p.inputStream)
         p.waitFor()
-        val mac = ValidationService.extractMacAddress(result.toLowerCase().replace("-", ":"))
+        val mac = ValidationService.extractMacAddress(result.lowercase().replace("-", ":"))
         val vendor = if (mac.isEmpty()) "" else oui.getName(mac) ?: ""
         Platform.runLater {
             foundList.add(ScanResult(ip, mac, vendor))

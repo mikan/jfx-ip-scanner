@@ -13,7 +13,7 @@ Installer packages are available at [releases page](https://github.com/mikan/jfx
 
 ### Prerequisites
 
-- JDK 15 or higher
+- JDK 17 or higher
 
 ### Local run
 
