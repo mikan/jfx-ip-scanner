@@ -7,7 +7,7 @@ enum class NetworkCommand {
     PING, ARP, TRACEROUTE;
 
     companion object {
-        private val windows = System.getProperty("os.name").toLowerCase().startsWith("win")
+        private val windows = System.getProperty("os.name").lowercase().startsWith("win")
         private val windowsSuccessResultPatterns = listOf("Approximate round trip times", "ラウンド トリップの概算時間")
 
         fun encodePingCommand(target: String, nPackets: Int, timeoutSec: Int): String {

@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     application
-    kotlin("jvm") version "1.4.30"
+    kotlin("jvm") version "1.5.31"
     id("org.openjfx.javafxplugin") version "0.0.10"
     id("org.jmailen.kotlinter") version "3.4.4"
     id("org.beryx.jlink") version "2.23.8"
@@ -24,7 +24,7 @@ dependencies {
 tasks {
     withType<KotlinCompile> {
         kotlinOptions {
-            jvmTarget = "14"
+            jvmTarget = "16"
         }
         dependsOn("genVersionFile")
     }
@@ -35,7 +35,7 @@ tasks {
     }
 
     javafx {
-        version = "15.0.1"
+        version = "17.0.1"
         modules = listOf("javafx.controls", "javafx.fxml")
     }
 
